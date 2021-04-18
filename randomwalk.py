@@ -2,6 +2,7 @@ import colorsys
 import math
 import random
 import matplotlib.pyplot as plot
+from sound import Sound
 
 
 class RandomWalk:
@@ -43,9 +44,11 @@ class RandomWalk:
         return random_walk
 
     def make_plot(self, directory="", steps=0):
-        plot_range = self.get_range(2)
+        path = directory + '/'
         n = len(self.walk)
+        r = len(str(steps))
 
+        plot_range = self.get_range(2)
         figure = plot.figure(figsize=(plot_range[0][1] - plot_range[0][0], plot_range[1][1] - plot_range[1][0]))
         figure.patch.set_facecolor('black')
         plot.xlim(plot_range[0])
@@ -53,8 +56,6 @@ class RandomWalk:
         plot.axis('off')
         step = 0
 
-        path = directory + '/'
-        r = len(str(steps))
         for i in range(n - 1):
             color = colorsys.hsv_to_rgb(i / n, 1.0, 1.0)
             if steps > 0 and i / n >= step / steps:
@@ -64,6 +65,30 @@ class RandomWalk:
             plot.plot(self.data[0][i:i + 2], self.data[1][i:i + 2], color=color, linewidth=12)
 
         if directory:
-            plot.savefig(path + (str(step).rjust(r, '0') if steps > 0 else 'walk'))
+            plot.savefig(path + (str(step).rjust(r, '0') if steps > 0 else "walk"))
         else:
             plot.show()
+
+    def make_sound(self, directory, steps=0):
+        path = directory + '/'
+        n = len(self.walk)
+
+        walk_range = self.get_range()
+
+        def x(value):
+            return (value - walk_range[0][0]) / (walk_range[0][1] - walk_range[0][0])
+
+        def y(value):
+            return (value - walk_range[1][0]) / (walk_range[1][1] - walk_range[1][0])
+
+        def frequency(value, frequency_min=220, frequency_max=3520):
+            return frequency_min * ((frequency_max / frequency_min) ** x(value))
+
+        sound = Sound()
+        for i in range(steps + 1):
+            index = math.ceil(i * (n / steps)) if i < steps else -1
+            point = self.walk[index]
+            note = [frequency(point[0]), y(point[1])]
+            sound.make_sound(note[0], note[1])
+
+        sound.export_sound(path + "walk.wav")
