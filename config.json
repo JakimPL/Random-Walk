@@ -1,16 +1,19 @@
 {
   "output_directory": "output",
-  "walk_length": 1200,
-  "steps": 120,
+  "random_walk": {
+    "walk_length": 1200,
+    "steps": 120,
+    "mode": 1
+  },
   "sound": {
     "sampling_frequency": 44100,
     "frame_rate": 10,
-    "frequency_min": 220,
-    "frequency_max": 3520
+    "frequency_min": 110,
+    "frequency_max": 1625
   },
   "plot": {
     "offset": 2,
-    "line_width": 12,
+    "line_width": 10,
     "background_color": "black"
   }
 }

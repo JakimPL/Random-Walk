@@ -5,9 +5,10 @@ class Config:
     def __init__(self):
         with open("config.json", 'r') as filename:
             config_data = json.load(filename)
-            self.length = config_data['walk_length']
-            self.steps = config_data['steps']
             self.output_directory = config_data['output_directory']
+            self.length = config_data['random_walk']['walk_length']
+            self.steps = config_data['random_walk']['steps']
+            self.mode = config_data['random_walk']['mode']
             self.sampling_frequency = config_data['sound']['sampling_frequency']
             self.frame_rate = config_data['sound']['frame_rate']
             self.frequency_min = config_data['sound']['frequency_min']

@@ -10,6 +10,7 @@ from sound import Sound
 class RandomWalk:
     def __init__(self, n=0):
         self.config = Config()
+        self.mode = self.config.mode
 
         if n == 0:
             n = self.config.length
@@ -20,7 +21,12 @@ class RandomWalk:
         self.walk = [[0, 0] for _ in range(n)]
         for i in range(n):
             self.walk[i] = [x, y]
-            direction = directions[random.randint(0, 3)]
+
+            if self.mode:
+                direction = [2 * random.random() - 1, 2 * random.random() - 1]
+            else:
+                direction = directions[random.randint(0, 3)]
+
             x += direction[0]
             y += direction[1]
 
@@ -46,7 +52,7 @@ class RandomWalk:
             line = file.readline()
             while line:
                 item = line.strip().split(',')
-                random_walk.walk += [list(map(int, item))]
+                random_walk.walk += [list(map(float, item))]
                 line = file.readline()
         random_walk.data = random_walk.transpose()
         random_walk.length = len(random_walk.walk)
@@ -98,14 +104,14 @@ class RandomWalk:
             return (value - walk_range[1][0]) / (walk_range[1][1] - walk_range[1][0])
 
         def frequency(value, frequency_min=self.config.frequency_min, frequency_max=self.config.frequency_max):
-            return frequency_min * ((frequency_max / frequency_min) ** x(value))
+            return frequency_min * ((frequency_max / frequency_min) ** y(value))
 
         duration = 1 / self.config.frame_rate
         sound = Sound(sampling_frequency=self.config.sampling_frequency, note_duration=duration)
         for i in range(steps + 1):
             index = math.ceil(i * (n / steps)) if i < steps else -1
             point = self.walk[index]
-            note = [frequency(point[0]), y(point[1])]
+            note = [frequency(point[1]), x(point[0])]
             sound.make_sound(note[0], note[1])
             progress_bar(i, steps)
 
