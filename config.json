@@ -1,0 +1,9 @@
+{
+  "walk_length": 1200,
+  "steps": 30,
+  "sampling_frequency": 44100,
+  "frame_rate": 10,
+  "frequency_min": 220,
+  "frequency_max": 3520,
+  "output_directory": "output"
+}

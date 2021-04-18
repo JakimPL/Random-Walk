@@ -8,6 +8,10 @@ class Sound:
     note_duration = 0.1
     sample = []
 
+    def __init__(self, sampling_frequency=44100, note_duration=0.1):
+        self.sampling_frequency = sampling_frequency
+        self.note_duration = note_duration
+
     def make_sound(self, frequency, harmonics):
         size = self.sampling_frequency * self.note_duration
         for x in range(int(size)):

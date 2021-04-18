@@ -2,11 +2,17 @@ import colorsys
 import math
 import random
 import matplotlib.pyplot as plot
+from config import Config
 from sound import Sound
 
 
 class RandomWalk:
-    def __init__(self, n):
+    def __init__(self, n=0):
+        self.config = Config()
+
+        if n == 0:
+            n = self.config.length
+
         directions = [[1, 0], [0, 1], [-1, 0], [0, -1]]
         x = 0
         y = 0
@@ -18,6 +24,7 @@ class RandomWalk:
             y += direction[1]
 
         self.data = self.transpose()
+        self.length = len(self.walk)
 
     def transpose(self):
         return list(map(list, zip(*self.walk)))
@@ -41,11 +48,12 @@ class RandomWalk:
                 random_walk.walk += [list(map(int, item))]
                 line = file.readline()
         random_walk.data = random_walk.transpose()
+        random_walk.length = len(random_walk.walk)
         return random_walk
 
     def make_plot(self, directory="", steps=0):
         path = directory + '/'
-        n = len(self.walk)
+        n = self.length
         r = len(str(steps))
 
         plot_range = self.get_range(2)
@@ -71,7 +79,7 @@ class RandomWalk:
 
     def make_sound(self, directory, steps=0):
         path = directory + '/'
-        n = len(self.walk)
+        n = self.length
 
         walk_range = self.get_range()
 
@@ -81,10 +89,11 @@ class RandomWalk:
         def y(value):
             return (value - walk_range[1][0]) / (walk_range[1][1] - walk_range[1][0])
 
-        def frequency(value, frequency_min=220, frequency_max=3520):
+        def frequency(value, frequency_min=self.config.frequency_min, frequency_max=self.config.frequency_max):
             return frequency_min * ((frequency_max / frequency_min) ** x(value))
 
-        sound = Sound()
+        duration = 1 / self.config.frame_rate
+        sound = Sound(sampling_frequency=self.config.sampling_frequency, note_duration=duration)
         for i in range(steps + 1):
             index = math.ceil(i * (n / steps)) if i < steps else -1
             point = self.walk[index]
