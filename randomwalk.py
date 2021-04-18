@@ -3,6 +3,7 @@ import math
 import random
 import matplotlib.pyplot as plot
 from config import Config
+from progress import progress_bar
 from sound import Sound
 
 
@@ -56,9 +57,9 @@ class RandomWalk:
         n = self.length
         r = len(str(steps))
 
-        plot_range = self.get_range(2)
+        plot_range = self.get_range(self.config.plot_offset)
         figure = plot.figure(figsize=(plot_range[0][1] - plot_range[0][0], plot_range[1][1] - plot_range[1][0]))
-        figure.patch.set_facecolor('black')
+        figure.patch.set_facecolor(self.config.plot_background_color)
         plot.xlim(plot_range[0])
         plot.ylim(plot_range[1])
         plot.axis('off')
@@ -69,15 +70,22 @@ class RandomWalk:
             if steps > 0 and i / n >= step / steps:
                 step += 1
                 plot.savefig(path + str(step).rjust(r, '0'))
+                progress_bar(step, steps)
 
-            plot.plot(self.data[0][i:i + 2], self.data[1][i:i + 2], color=color, linewidth=12)
+            plot.plot(self.data[0][i:i + 2], self.data[1][i:i + 2], color=color, linewidth=self.config.plot_line_width)
 
         if directory:
             plot.savefig(path + (str(step).rjust(r, '0') if steps > 0 else "walk"))
         else:
             plot.show()
 
+        if steps > 0:
+            print('\n')
+
     def make_sound(self, directory, steps=0):
+        if steps == 0:
+            return
+
         path = directory + '/'
         n = self.length
 
@@ -99,5 +107,7 @@ class RandomWalk:
             point = self.walk[index]
             note = [frequency(point[0]), y(point[1])]
             sound.make_sound(note[0], note[1])
+            progress_bar(i, steps)
 
         sound.export_sound(path + "walk.wav")
+        print('\n')
